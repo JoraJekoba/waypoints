@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Waypoints.App/Waypoints.App.csproj" />
+  <Project Path="Waypoints.Domain/Waypoints.Domain.csproj" />
+  <Project Path="Waypoints.Infrastructure/Waypoints.Infrastructure.csproj" />
+</Solution>
