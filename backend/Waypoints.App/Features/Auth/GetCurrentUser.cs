@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Waypoints.Infrastructure;
 
-namespace Waypoints.App.Features.Auth.Google;
+namespace Waypoints.App.Features.Auth;
 
 public static class GetCurrentUser
 {

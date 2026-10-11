@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Waypoints.Infrastructure;
 
+namespace Waypoints.App.Features.Auth.Google;
+
 public static class GoogleCallback
 {
     public static void Map(RouteGroupBuilder group) => group.MapGet("/callback", Handle);
@@ -11,7 +13,8 @@ public static class GoogleCallback
         string? returnUrl,
         HttpContext http,
         SignInManager<AppUser> signInManager,
-        UserManager<AppUser> userManager)
+        UserManager<AppUser> userManager,
+        IConfiguration config)
     {
         // 1. Что сказал Google (читается из временной External cookie)
         var info = await signInManager.GetExternalLoginInfoAsync();
@@ -36,7 +39,7 @@ public static class GoogleCallback
             {
                 UserName = email,
                 Email = email,
-                EmailConfirmed = true,   // Google уже подтвердил email
+                EmailConfirmed = true,
                 DisplayName = info.Principal.FindFirstValue(ClaimTypes.Name),
                 AvatarUrl = info.Principal.FindFirstValue("picture")
             };
@@ -44,6 +47,11 @@ public static class GoogleCallback
             var created = await userManager.CreateAsync(user);
             if (!created.Succeeded)
                 return Results.Redirect("/?error=registration_failed");
+
+            if (email.Equals(config["Admin"], StringComparison.OrdinalIgnoreCase))
+            {
+                await userManager.AddToRoleAsync(user, "Admin");
+            }
 
             await userManager.AddLoginAsync(user, info);
             await signInManager.SignInAsync(user, isPersistent: true);
